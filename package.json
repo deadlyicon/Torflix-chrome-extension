@@ -1,0 +1,29 @@
+{
+  "author": "Jared Grippe",
+  "name": "torflix",
+  "description": "Torflix chrome extension",
+  "version": "0.0.1",
+  "dependencies": {
+    "browserify": "^6.3.4",
+    "coffee-script": "^1.8.0",
+    "coffeeify": "^1.0.0",
+    "object-assign": "^2.0.0"
+  },
+  "engines": {
+    "node": "0.10.x"
+  },
+  "scripts": {
+  },
+  "browserify": {
+    "extensions": [
+      ".cjsx",
+      ".coffee",
+      ".js",
+      ".json"
+    ],
+    "transform": [
+      "coffeeify"
+    ]
+  },
+  "private": true
+}
