@@ -7,3 +7,10 @@ chrome.app.runtime.onLaunched.addListener(function() {
     }
   });
 });
+
+
+
+var oReq = new XMLHttpRequest();
+oReq.onload = function() { debugger };
+oReq.open("GET", 'https://developer.chrome.com/apps/first_app', true);
+oReq.send();
