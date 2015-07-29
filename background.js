@@ -48,7 +48,7 @@ pruneRequestIds = function(){
 
 AllowedOrigins = [
   'http://torflix.jaredatron.com',
-  'http://putio.dev'
+  'http://torflix.dev'
 ]
 
 var requestListener = function(details) {
