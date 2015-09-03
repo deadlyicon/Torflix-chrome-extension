@@ -1,0 +1,1 @@
+DOMEventMessagePassingManager = require './DOMEventMessagePassingManager'
