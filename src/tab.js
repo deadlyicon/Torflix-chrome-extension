@@ -44,14 +44,14 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var DOMEventMessageBus, jQuery, messageBus;
+	/* WEBPACK VAR INJECTION */(function(global) {var initialize;
 
-	if (global.TorflixChromeExtensionLoaded) {
-	  console.log('TorflixChromeExtension already loaded');
-	} else {
+	initialize = function() {
+	  var DOMEventMessageBus, HTTPRequest, jQuery, messageBus;
 	  global.TorflixChromeExtensionLoaded = true;
-	  jQuery = __webpack_require__(1);
+	  console.log('TorflixChromeExtension initializing');
 	  DOMEventMessageBus = __webpack_require__(2);
+	  jQuery = __webpack_require__(1);
 	  messageBus = new DOMEventMessageBus({
 	    name: 'EXTENSION',
 	    color: 'orange',
@@ -59,21 +59,36 @@
 	    sendEvent: 'fromChromeExtension',
 	    receiveEvent: 'toChromeExtension'
 	  });
-	  messageBus.onReceiveMessage = function(arg) {
-	    var id, payload, type;
-	    id = arg.id, type = arg.type, payload = arg.payload;
-	    switch (type) {
+	  messageBus.onReceiveMessage = function(message) {
+	    switch (message.type) {
 	      case 'HTTPRequest':
-	        return 'HTTPRequest';
+	        return HTTPRequest(message);
 	    }
 	  };
-	  if (messageBus.isReady()) {
-	    messageBus.sendMessage('ready');
-	  } else {
-	    messageBus.log('NO READY :(');
-	  }
+	  HTTPRequest = function(arg) {
+	    var eventType, id, payload, request, type;
+	    id = arg.id, type = arg.type, payload = arg.payload;
+	    request = payload;
+	    eventType = "HTTPRequestUpdate-" + request.id;
+	    jQuery.ajax(request).complete(function(response) {
+	      return messageBus.dispatchEvent(eventType, {
+	        request: request,
+	        status: response.status,
+	        responseText: response.responseText,
+	        responseJSON: response.responseJSON
+	      });
+	    });
+	    return eventType;
+	  };
+	  messageBus.sendMessage('ready');
 	  global.messageBus = messageBus;
-	  global.jQuery = jQuery;
+	  return global.jQuery = jQuery;
+	};
+
+	if (global.TorflixChromeExtensionLoaded) {
+	  console.log('TorflixChromeExtension already loaded');
+	} else {
+	  initialize();
 	}
 
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
@@ -9319,9 +9334,7 @@
 	    })(this));
 	  }
 
-	  DOMEventMessageBus.prototype.log = function(string) {
-	    return console.log("%c" + this.name + " " + string, "color: " + this.color + "; font-weight: bold; ");
-	  };
+	  DOMEventMessageBus.prototype.log = function(string) {};
 
 	  DOMEventMessageBus.prototype.dispatchEvent = function(event, message) {
 	    if (!this.DOMNode.dispatchEvent(new CustomEvent(event, {
@@ -9329,6 +9342,18 @@
 	    }))) {
 	      debugger;
 	    }
+	    return this;
+	  };
+
+	  DOMEventMessageBus.prototype.onNext = function(eventType, handler) {
+	    var wrapper;
+	    wrapper = (function(_this) {
+	      return function(event) {
+	        _this.DOMNode.removeEventListener(eventType, wrapper);
+	        return handler(event.detail);
+	      };
+	    })(this);
+	    this.DOMNode.addEventListener(eventType, wrapper);
 	    return this;
 	  };
 
@@ -9354,6 +9379,7 @@
 	    })(this);
 	    this.DOMNode.addEventListener(eventType, handler);
 	    this.dispatchEvent(this.SEND_EVENT, message);
+	    this.DOMNode.removeEventListener(eventType, handler);
 	    if (response === DIDNT_RESPOND) {
 	      error = new Error('DOMEventMessageBus::NoResponseError');
 	      error.isDOMEventMessageBusNoResponseError = true;

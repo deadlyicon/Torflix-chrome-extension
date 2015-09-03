@@ -1,12 +1,9 @@
-if global.TorflixChromeExtensionLoaded
-
-  console.log('TorflixChromeExtension already loaded')
-
-else
+initialize = ->
   global.TorflixChromeExtensionLoaded = true
+  console.log('TorflixChromeExtension initializing')
 
-  jQuery = require 'jquery'
   DOMEventMessageBus = require 'dom-event-message-bus'
+  jQuery = require 'jquery'
 
 
 
@@ -19,16 +16,35 @@ else
 
 
 
-  messageBus.onReceiveMessage = ({id, type, payload}) ->
-    switch type
 
+  messageBus.onReceiveMessage = (message) ->
+    # {id, type, payload} = message
+    switch message.type
       when 'HTTPRequest'
-        'HTTPRequest'
+        HTTPRequest(message)
 
-  if messageBus.isReady()
-    messageBus.sendMessage('ready')
-  else
-    messageBus.log('NO READY :(')
+
+
+  HTTPRequest = ({id, type, payload}) ->
+    request = payload
+    eventType = "HTTPRequestUpdate-#{request.id}"
+    jQuery.ajax(request).complete (response) ->
+      messageBus.dispatchEvent eventType,
+        request:      request
+        status:       response.status
+        responseText: response.responseText
+        responseJSON: response.responseJSON
+    eventType
+
+
+  messageBus.sendMessage 'ready'
+
 
   global.messageBus = messageBus
   global.jQuery = jQuery
+# end
+
+if global.TorflixChromeExtensionLoaded
+  console.log('TorflixChromeExtension already loaded')
+else
+  initialize()
