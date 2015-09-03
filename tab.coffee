@@ -1,1 +1,1 @@
-DOMEventMessagePassingManager = require './DOMEventMessagePassingManager'
+DOMEventMessageBus = require 'dom-event-message-bus'
