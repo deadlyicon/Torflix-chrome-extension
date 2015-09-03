@@ -12,6 +12,7 @@ else
 
   messageBus = new DOMEventMessageBus
     name:         'EXTENSION'
+    color:        'orange'
     DOMNode:       document
     sendEvent:    'fromChromeExtension'
     receiveEvent: 'toChromeExtension'
@@ -21,20 +22,13 @@ else
   messageBus.onReceiveMessage = ({id, type, payload}) ->
     switch type
 
-      when 'ping'
-        messageBus.sendMessage 'pong', payload
+      when 'HTTPRequest'
+        'HTTPRequest'
 
-      when 'pong'
-        console.log 'TorflixChromeExtension received pong', payload
+  if messageBus.isReady()
+    messageBus.sendMessage('ready')
+  else
+    messageBus.log('NO READY :(')
 
-
-
-
-  console.log('TorflixChromeExtension loaded')
-  messageBus.sendMessage('ready')
-    .then((response)->
-      debugger
-    )
-    .catch((response)->
-      debugger
-    )
+  global.messageBus = messageBus
+  global.jQuery = jQuery
