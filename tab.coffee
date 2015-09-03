@@ -28,10 +28,11 @@ initialize = ->
   HTTPRequest = ({id, type, payload}) ->
     request = payload
     eventType = "HTTPRequestUpdate-#{request.id}"
-    jQuery.ajax(request).complete (response) ->
+    jQuery.ajax(request).complete (response, textStatus) ->
       messageBus.dispatchEvent eventType,
         request:      request
         status:       response.status
+        textStatus:   textStatus
         responseText: response.responseText
         responseJSON: response.responseJSON
     eventType

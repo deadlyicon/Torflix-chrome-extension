@@ -70,10 +70,11 @@
 	    id = arg.id, type = arg.type, payload = arg.payload;
 	    request = payload;
 	    eventType = "HTTPRequestUpdate-" + request.id;
-	    jQuery.ajax(request).complete(function(response) {
+	    jQuery.ajax(request).complete(function(response, textStatus) {
 	      return messageBus.dispatchEvent(eventType, {
 	        request: request,
 	        status: response.status,
+	        textStatus: textStatus,
 	        responseText: response.responseText,
 	        responseJSON: response.responseJSON
 	      });
