@@ -1,1 +1,1 @@
-console.log('app.js')
+alert('app.js')
