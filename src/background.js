@@ -46,17 +46,33 @@ pruneRequestIds = function(){
   RequestIds = RequestIds.slice(0, MAX_REQEST_IDS_SIZE)
 }
 
+
 AllowedOrigins = [
-  'http://torflix.jaredatron.com',
-  'http://torflix.dev'
+  'torflix.jaredatron.com',
+  'torflix.dev'
 ]
+
+ORIGIN_REGEXP = /^https?:\/\/([^/]+)/
+originOfUrl = function(url){
+  return url.match(ORIGIN_REGEXP)[1]
+}
+
 
 var requestListener = function(details) {
   var headers = new Headers(details.requestHeaders);
-  var origin = headers.get('Origin');
-  if (AllowedOrigins.includes(origin)){
-    console.log('Torflix Request', details.requestId, details);
+  var origin = headers.get('origin') || headers.get('Origin')
+  var refererOrigin;
+
+  referer = headers.get('Referer')
+  if (referer){
+    refererOrigin = originOfUrl(referer)
+  }
+
+  if (AllowedOrigins.includes(origin) || AllowedOrigins.includes(refererOrigin)){
+    console.log('-> Torflix', details.requestId, details.url, {details:details});
     RequestIds.push(details.requestId)
+  }else{
+    console.log('-> OTHER  ', details.requestId, details.url, {details:details});
   }
   // headers.set("Origin","http://evil.com/")
   // accessControlRequestHeaders = headers.get("Access-Control-Request-Headers")
@@ -66,18 +82,24 @@ var requestListener = function(details) {
 
 var responseListener = function(details) {
   if (RequestIds.includes(details.requestId)){
-    console.log('Torflix Response', details.requestId, details);
-    var headers = new Headers(details.responseHeaders);
-    headers.set('Access-Control-Allow-Origin', '*')
-    headers.add('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, HEAD, OPTIONS');
-    // headers.add('Access-Control-Allow-Headers', accessControlRequestHeaders)
+    console.log('<- Torflix', details.requestId, details.url, {details:details});
+    // details.statusCode = 200
+    // var headers = new Headers(details.responseHeaders);
+    return {
+      responseHeaders: [
+        {name: 'Access-Control-Allow-Origin',  value: '*'},
+        {name: 'Access-Control-Allow-Methods', value: 'GET, PUT, POST, DELETE, HEAD, OPTIONS'},
+      ]
+    };
+  }else{
+    console.log('<- OTHER  ', details.requestId, details.url, {details:details});
   }
   pruneRequestIds()
   return {responseHeaders: details.responseHeaders};
 };
 
 
-chrome.runtime.onInstalled.addListener(function(){
+(chrome.runtime.onInstalled || chrome.runtime.onStartup).addListener(function(){
 
   chrome.webRequest.onBeforeSendHeaders.addListener(
     requestListener,
