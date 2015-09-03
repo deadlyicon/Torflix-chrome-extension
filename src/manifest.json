@@ -8,9 +8,10 @@
   },
   "permissions": [
     "tabs",
-    "storage",
-    "webRequest",
-    "webRequestBlocking",
-    "*://*/*"
+    "*://toflix.*/*"
+    // "storage",
+    // "webRequest",
+    // "webRequestBlocking",
+    // "*://*/*"
   ]
 }
