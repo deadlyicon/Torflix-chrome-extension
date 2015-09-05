@@ -52,6 +52,8 @@
 
 	AllowedOrigins['torflix.dev'] = true;
 
+	AllowedOrigins['deadlyicon-putio.herokuapp.com'] = true;
+
 	ORIGIN_REGEXP = /^[^\/]*:\/\/([^\/]+)/;
 
 	originOfUrl = function(url) {

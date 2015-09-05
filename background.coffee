@@ -1,6 +1,7 @@
 AllowedOrigins = {}
 AllowedOrigins['torflix.jaredatron.com'] = true
 AllowedOrigins['torflix.dev'] = true
+AllowedOrigins['deadlyicon-putio.herokuapp.com'] = true
 ORIGIN_REGEXP = /^[^\/]*:\/\/([^\/]+)/
 
 originOfUrl = (url) ->

@@ -50,8 +50,8 @@
 	  var DOMEventMessageBus, HTTPRequest, jQuery, messageBus;
 	  global.TorflixChromeExtensionLoaded = true;
 	  console.log('TorflixChromeExtension initializing');
-	  DOMEventMessageBus = __webpack_require__(2);
-	  jQuery = __webpack_require__(1);
+	  DOMEventMessageBus = __webpack_require__(1);
+	  jQuery = __webpack_require__(2);
 	  messageBus = new DOMEventMessageBus({
 	    name: 'EXTENSION',
 	    color: 'orange',
@@ -96,6 +96,120 @@
 
 /***/ },
 /* 1 */
+/***/ function(module, exports) {
+
+	var DIDNT_RESPOND, DOMEventMessageBus;
+
+	DIDNT_RESPOND = {
+	  DIDNT_RESPOND: true
+	};
+
+	module.exports = DOMEventMessageBus = (function() {
+	  function DOMEventMessageBus(arg) {
+	    var receiveEvent, sendEvent;
+	    this.name = arg.name, this.color = arg.color, this.DOMNode = arg.DOMNode, sendEvent = arg.sendEvent, receiveEvent = arg.receiveEvent, this.timeout = arg.timeout;
+	    this.timeout || (this.timeout = 1000);
+	    this.lastMessageId = Date.now();
+	    this.SEND_EVENT = sendEvent;
+	    this.RECEIVE_EVENT = receiveEvent;
+	    this.DOMNode.addEventListener(this.RECEIVE_EVENT, (function(_this) {
+	      return function(event) {
+	        return _this.receiveMessage(event.detail);
+	      };
+	    })(this));
+	  }
+
+	  DOMEventMessageBus.prototype.log = function(string) {};
+
+	  DOMEventMessageBus.prototype.dispatchEvent = function(event, message) {
+	    if (!this.DOMNode.dispatchEvent(new CustomEvent(event, {
+	      detail: message
+	    }))) {
+	      debugger;
+	    }
+	    return this;
+	  };
+
+	  DOMEventMessageBus.prototype.onNext = function(eventType, handler) {
+	    var wrapper;
+	    wrapper = (function(_this) {
+	      return function(event) {
+	        _this.DOMNode.removeEventListener(eventType, wrapper);
+	        return handler(event.detail);
+	      };
+	    })(this);
+	    this.DOMNode.addEventListener(eventType, wrapper);
+	    return this;
+	  };
+
+	  DOMEventMessageBus.prototype.generateMessageUUID = function() {
+	    return this.name + "-" + (this.lastMessageId++);
+	  };
+
+	  DOMEventMessageBus.prototype.sendMessage = function(type, payload) {
+	    var error, eventType, handler, id, message, response;
+	    id = this.generateMessageUUID();
+	    message = {
+	      id: id,
+	      type: type,
+	      payload: payload
+	    };
+	    response = DIDNT_RESPOND;
+	    eventType = "messageResponse-" + id;
+	    handler = (function(_this) {
+	      return function(event) {
+	        _this.DOMNode.removeEventListener(eventType, handler);
+	        return response = event.detail;
+	      };
+	    })(this);
+	    this.DOMNode.addEventListener(eventType, handler);
+	    this.dispatchEvent(this.SEND_EVENT, message);
+	    this.DOMNode.removeEventListener(eventType, handler);
+	    if (response === DIDNT_RESPOND) {
+	      error = new Error('DOMEventMessageBus::NoResponseError');
+	      error.isDOMEventMessageBusNoResponseError = true;
+	      error.message = message;
+	      throw error;
+	    }
+	    return response;
+	  };
+
+	  DOMEventMessageBus.prototype.receiveMessage = function(message) {
+	    var id, payload, response, type;
+	    id = message.id, type = message.type, payload = message.payload;
+	    this.log("RECEIVED: " + id + " " + type + " " + (JSON.stringify(payload)));
+	    response = message.type === 'echo' ? message.payload : this.onReceiveMessage(message);
+	    return this.replyToMessage(message, response);
+	  };
+
+	  DOMEventMessageBus.prototype.replyToMessage = function(message, response) {
+	    var id, payload, type;
+	    id = message.id, type = message.type, payload = message.payload;
+	    this.log("REPLIED:  " + id + " " + (JSON.stringify(response)));
+	    return this.dispatchEvent("messageResponse-" + id, response);
+	  };
+
+	  DOMEventMessageBus.prototype.isReady = function() {
+	    var error, error1;
+	    try {
+	      return this.sendMessage('echo', 'ready?') === 'ready?';
+	    } catch (error1) {
+	      error = error1;
+	      if (error.isDOMEventMessageBusNoResponseError) {
+	        return false;
+	      } else {
+	        throw error;
+	      }
+	    }
+	  };
+
+	  return DOMEventMessageBus;
+
+	})();
+
+
+/***/ },
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -9308,120 +9422,6 @@
 	return jQuery;
 
 	}));
-
-
-/***/ },
-/* 2 */
-/***/ function(module, exports) {
-
-	var DIDNT_RESPOND, DOMEventMessageBus;
-
-	DIDNT_RESPOND = {
-	  DIDNT_RESPOND: true
-	};
-
-	module.exports = DOMEventMessageBus = (function() {
-	  function DOMEventMessageBus(arg) {
-	    var receiveEvent, sendEvent;
-	    this.name = arg.name, this.color = arg.color, this.DOMNode = arg.DOMNode, sendEvent = arg.sendEvent, receiveEvent = arg.receiveEvent, this.timeout = arg.timeout;
-	    this.timeout || (this.timeout = 1000);
-	    this.lastMessageId = Date.now();
-	    this.SEND_EVENT = sendEvent;
-	    this.RECEIVE_EVENT = receiveEvent;
-	    this.DOMNode.addEventListener(this.RECEIVE_EVENT, (function(_this) {
-	      return function(event) {
-	        return _this.receiveMessage(event.detail);
-	      };
-	    })(this));
-	  }
-
-	  DOMEventMessageBus.prototype.log = function(string) {};
-
-	  DOMEventMessageBus.prototype.dispatchEvent = function(event, message) {
-	    if (!this.DOMNode.dispatchEvent(new CustomEvent(event, {
-	      detail: message
-	    }))) {
-	      debugger;
-	    }
-	    return this;
-	  };
-
-	  DOMEventMessageBus.prototype.onNext = function(eventType, handler) {
-	    var wrapper;
-	    wrapper = (function(_this) {
-	      return function(event) {
-	        _this.DOMNode.removeEventListener(eventType, wrapper);
-	        return handler(event.detail);
-	      };
-	    })(this);
-	    this.DOMNode.addEventListener(eventType, wrapper);
-	    return this;
-	  };
-
-	  DOMEventMessageBus.prototype.generateMessageUUID = function() {
-	    return this.name + "-" + (this.lastMessageId++);
-	  };
-
-	  DOMEventMessageBus.prototype.sendMessage = function(type, payload) {
-	    var error, eventType, handler, id, message, response;
-	    id = this.generateMessageUUID();
-	    message = {
-	      id: id,
-	      type: type,
-	      payload: payload
-	    };
-	    response = DIDNT_RESPOND;
-	    eventType = "messageResponse-" + id;
-	    handler = (function(_this) {
-	      return function(event) {
-	        _this.DOMNode.removeEventListener(eventType, handler);
-	        return response = event.detail;
-	      };
-	    })(this);
-	    this.DOMNode.addEventListener(eventType, handler);
-	    this.dispatchEvent(this.SEND_EVENT, message);
-	    this.DOMNode.removeEventListener(eventType, handler);
-	    if (response === DIDNT_RESPOND) {
-	      error = new Error('DOMEventMessageBus::NoResponseError');
-	      error.isDOMEventMessageBusNoResponseError = true;
-	      error.message = message;
-	      throw error;
-	    }
-	    return response;
-	  };
-
-	  DOMEventMessageBus.prototype.receiveMessage = function(message) {
-	    var id, payload, response, type;
-	    id = message.id, type = message.type, payload = message.payload;
-	    this.log("RECEIVED: " + id + " " + type + " " + (JSON.stringify(payload)));
-	    response = message.type === 'echo' ? message.payload : this.onReceiveMessage(message);
-	    return this.replyToMessage(message, response);
-	  };
-
-	  DOMEventMessageBus.prototype.replyToMessage = function(message, response) {
-	    var id, payload, type;
-	    id = message.id, type = message.type, payload = message.payload;
-	    this.log("REPLIED:  " + id + " " + (JSON.stringify(response)));
-	    return this.dispatchEvent("messageResponse-" + id, response);
-	  };
-
-	  DOMEventMessageBus.prototype.isReady = function() {
-	    var error, error1;
-	    try {
-	      return this.sendMessage('echo', 'ready?') === 'ready?';
-	    } catch (error1) {
-	      error = error1;
-	      if (error.isDOMEventMessageBusNoResponseError) {
-	        return false;
-	      } else {
-	        throw error;
-	      }
-	    }
-	  };
-
-	  return DOMEventMessageBus;
-
-	})();
 
 
 /***/ }
