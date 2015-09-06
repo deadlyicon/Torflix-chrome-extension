@@ -12,9 +12,9 @@ module.exports = {
   // devtool: 'eval',
 
   entry: {
-    app:        path('app'),
-    background: path('background'),
-    tab:        path('tab')
+    // app:        path('app'),
+    background: path('background')
+    // tab:        path('tab')
   },
 
   output: {

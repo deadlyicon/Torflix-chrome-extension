@@ -1,6 +1,6 @@
 {
-  "name": "torflix",
-  "version": "1",
+  "name": "Torflix",
+  "version": "2",
   "manifest_version": 2,
   "description": "Torflix",
   "background": {
@@ -11,5 +11,9 @@
     "webRequest",
     "webRequestBlocking",
     "*://*/*"
-  ]
+  ],
+  "icons": {
+    "16":  "calculator-16.png",
+    "128": "calculator-128.png"
+  }
 }
