@@ -8,8 +8,11 @@
   },
   "permissions": [
     "tabs",
-    "*://torflix.dev/*",
-    "*://deadlyicon-putio.herokuapp.com/*"
+    "webRequest",
+    "webRequestBlocking",
+    "*://*/*"
+    // "*://torflix.dev/*",
+    // "*://deadlyicon-putio.herokuapp.com/*"
     // "storage",
     // "webRequest",
     // "webRequestBlocking",

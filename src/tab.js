@@ -50,8 +50,8 @@
 	  var DOMEventMessageBus, HTTPRequest, jQuery, messageBus;
 	  global.TorflixChromeExtensionLoaded = true;
 	  console.log('TorflixChromeExtension initializing');
-	  DOMEventMessageBus = __webpack_require__(1);
-	  jQuery = __webpack_require__(2);
+	  DOMEventMessageBus = __webpack_require__(2);
+	  jQuery = __webpack_require__(3);
 	  messageBus = new DOMEventMessageBus({
 	    name: 'EXTENSION',
 	    color: 'orange',
@@ -95,7 +95,8 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 1 */
+/* 1 */,
+/* 2 */
 /***/ function(module, exports) {
 
 	var DIDNT_RESPOND, DOMEventMessageBus;
@@ -209,7 +210,7 @@
 
 
 /***/ },
-/* 2 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
