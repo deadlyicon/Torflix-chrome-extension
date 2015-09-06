@@ -11,11 +11,5 @@
     "webRequest",
     "webRequestBlocking",
     "*://*/*"
-    // "*://torflix.dev/*",
-    // "*://deadlyicon-putio.herokuapp.com/*"
-    // "storage",
-    // "webRequest",
-    // "webRequestBlocking",
-    // "*://*/*"
   ]
 }

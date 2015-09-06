@@ -18,23 +18,6 @@ isTorflixUrl = (url) ->
 isTorflixRequest = (headers) ->
   isTorflixUrl(headers.get('Origin')) || isTorflixUrl(headers.get('Referer'))
 
-# filterForTorflixTabs = (tabs) ->
-#   tabs.filter (tab) ->
-#     isTorflixUrl tab.url
-
-# getTorflixTabs = (callback) ->
-#   chrome.tabs.query {}, (tabs) ->
-#     callback filterForTorflixTabs(tabs)
-#     return
-#   return
-
-# chrome.tabs.onUpdated.addListener (tabId, changes, tab) ->
-#   if changes.status == 'complete' and isTorflixUrl(tab.url)
-#     console.info 'FOUND ONE', tab
-#     chrome.tabs.executeScript null, file: 'tab.js'
-
-
-
 
 
 chrome.runtime.onInstalled.addListener (details) ->
@@ -92,8 +75,6 @@ responseListener = (details) ->
     headers.set 'Access-Control-Allow-Origin', '*'
     if storedHeaders['Access-Control-Request-Headers']
       headers.set 'Access-Control-Allow-Headers', storedHeaders['Access-Control-Request-Headers']
-    # else
-    #   headers.rem 'Access-Control-Allow-Headers'
     headers.update 'Access-Control-Allow-Credentials', 'true'
     headers.set 'Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE'
     headers.set 'Allow', 'POST, GET, OPTIONS, PUT, DELETE'
