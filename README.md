@@ -1,4 +1,4 @@
-# Torflix Chomre Extension
+# Torflix Chrome Extension
 
 ## Installation
 
